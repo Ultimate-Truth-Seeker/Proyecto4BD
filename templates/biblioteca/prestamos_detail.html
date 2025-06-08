@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Préstamos de {{ usuario.username }}</h1>
+  <p><strong>Nombre:</strong> {{ usuario.nombre_completo }}</p>
+  <p><strong>Email:</strong> {{ usuario.email }}</p>
+
+  <h2>Historial de Préstamos</h2>
+  <p><a href="{% url 'loan-add' %}">➕ Agregar Préstamo</a> | 
+     <a href="{% url 'prestamos-list' %}">🔙 Volver a Usuarios</a></p>
+
+  {% if loans %}
+    <ul>
+      {% for loan in loans %}
+        <li>
+          ID {{ loan.id }} —
+          Copia {{ loan.copy }} —
+          Vence: {{ loan.due_date }} —
+          {% if loan.returned_at %}Devuelto: {{ loan.returned_at }}{% else %}Pendiente{% endif %}
+          |
+          <a href="{% url 'loan-edit' loan.pk %}">Editar</a> |
+          <a href="{% url 'loan-delete' loan.pk %}">Borrar</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No hay préstamos registrados aún.</p>
+  {% endif %}
+{% endblock %}

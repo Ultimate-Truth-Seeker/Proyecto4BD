@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Confirmar borrado</h1>
+<p>¿Seguro que deseas eliminar “{{ object.title }}”?</p>
+<form method="post">{% csrf_token %}
+  <button type="submit">Sí, borrar</button>
+  <a href="{% url 'catalogo-list' %}">No, volver</a>
+</form>
+{% endblock %}

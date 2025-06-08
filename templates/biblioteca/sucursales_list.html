@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Actividad de Sucursales</h1>
+  <p><a href="{% url 'branch-add' %}">➕ Nueva sucursal</a></p>
+  <ul>
+    {% for sucursal in sucursales %}
+      <li>
+        <a href="{% url 'sucursal-detail' sucursal.sucursal_id %}">
+          {{ sucursal.nombre_sucursal }}
+        </a>
+        — Ocupación: {{ sucursal.porcentaje_ocupacion }}%
+        (<a href="{% url 'branch-edit' sucursal.sucursal_id %}">editar</a> |
+         <a href="{% url 'branch-delete' sucursal.sucursal_id %}">borrar</a>)
+      </li>
+    {% empty %}
+      <li>No hay sucursales registradas.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

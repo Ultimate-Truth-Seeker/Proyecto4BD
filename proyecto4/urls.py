@@ -16,7 +16,30 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+import biblioteca.views as views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+
+    # CRUD de Catálogo
+    path("catalogo/", views.CatalogoListView.as_view(), name="catalogo-list"),
+    path("catalogo/add/", views.BookCreateView.as_view(), name="book-add"),
+    path("catalogo/<str:pk>/edit/", views.BookUpdateView.as_view(), name="book-edit"),
+    path("catalogo/<str:pk>/delete/", views.BookDeleteView.as_view(), name="book-delete"),
+    path("catalogo/<str:isbn>/", views.LibroDetailView.as_view(), name="catalogo-detail"),
+
+    # CRUD de Préstamos
+    path("prestamos/", views.PrestamosUsuariosListView.as_view(), name="prestamos-list"),
+    path("prestamos/<int:usuario_id>/", views.PrestamosUsuarioDetailView.as_view(), name="prestamos-detail"),
+    path("prestamos/add/", views.LoanCreateView.as_view(), name="loan-add"),
+    path("prestamos/<int:pk>/edit/", views.LoanUpdateView.as_view(), name="loan-edit"),
+    path("prestamos/<int:pk>/delete/", views.LoanDeleteView.as_view(), name="loan-delete"),
+
+    # CRUD de Sucursales
+    path("sucursales/", views.SucursalesListView.as_view(), name="sucursales-list"),
+    path("sucursales/<int:sucursal_id>/", views.SucursalDetailView.as_view(), name="sucursal-detail"),
+    path("sucursales/add/", views.BranchCreateView.as_view(), name="branch-add"),
+    path("sucursales/<int:pk>/edit/", views.BranchUpdateView.as_view(), name="branch-edit"),
+    path("sucursales/<int:pk>/delete/", views.BranchDeleteView.as_view(), name="branch-delete"),
 ]

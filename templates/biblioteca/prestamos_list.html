@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Estado de Préstamos de Usuarios</h1>
+  <p><a href="{% url 'loan-add' %}">➕ Nuevo préstamo</a></p>
+  <ul>
+    {% for usuario in usuarios %}
+      <li>
+        <a href="{% url 'prestamos-detail' usuario.usuario_id %}">
+          {{ usuario.username }} ({{ usuario.total_prestamos }} préstamos)
+        </a>
+      </li>
+    {% empty %}
+      <li>No hay usuarios activos.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

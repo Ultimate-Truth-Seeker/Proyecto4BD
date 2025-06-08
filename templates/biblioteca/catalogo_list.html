@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Catálogo de Libros</h1>
+<a href="{% url 'book-add' %}">Añadir libro</a>
+<ul>
+  {% for libro in libros %}
+    <li>
+      <a href="{% url 'catalogo-detail' libro.isbn %}">{{ libro.title }}</a>
+      — {{ libro.autor_principal }}
+      (<a href="{% url 'book-edit' libro.isbn %}">editar</a>
+      | <a href="{% url 'book-delete' libro.isbn %}">borrar</a>)
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

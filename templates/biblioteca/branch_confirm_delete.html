@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Eliminar Sucursal</h1>
+  <p>¿Seguro que deseas borrar la sucursal “<strong>{{ object.name }}</strong>”?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, borrar</button>
+    <a href="{% url 'sucursales-list' %}">No, volver</a>
+  </form>
+{% endblock %}

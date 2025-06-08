@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Sucursal: {{ sucursal.nombre_sucursal }}</h1>
+  <p><strong>Dirección:</strong> {{ sucursal.address }}</p>
+  <p><strong>Teléfono:</strong> {{ sucursal.phone }}</p>
+  <p><strong>Préstamos activos:</strong> {{ sucursal.prestamos_activos }}</p>
+  <p><strong>Eventos futuros:</strong> {{ sucursal.eventos_futuros }}</p>
+  <p><strong>% Ocupación:</strong> {{ sucursal.porcentaje_ocupacion }}%</p>
+
+  <p>
+    <a href="{% url 'branch-edit' sucursal.sucursal_id %}">✏️ Editar</a> |
+    <a href="{% url 'sucursales-list' %}">🔙 Volver a sucursales</a>
+  </p>
+{% endblock %}

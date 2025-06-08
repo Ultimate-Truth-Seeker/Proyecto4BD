@@ -57,7 +57,7 @@ class Migration(migrations.Migration):
             -- Trigger: auditoría de libros
             CREATE OR REPLACE FUNCTION trg_book_audit() RETURNS trigger AS $$
             BEGIN
-                INSERT INTO biblioteca_audit_log(table_name, record_id, op, changed_at, change_user)
+                INSERT INTO biblioteca_auditlog(table_name, record_id, op, changed_at, change_user)
                 VALUES('books', COALESCE(NEW.isbn, OLD.isbn), TG_OP, NOW(), current_user);
                 RETURN NEW;
             END;$$ LANGUAGE plpgsql;

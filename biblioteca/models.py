@@ -31,6 +31,8 @@ class BookConditionField(models.Field):
     def get_prep_value(self, value):
         return value
 
+from decimal import Decimal
+import re
 class MoneyField(models.Field):
     """Mapea el tipo compuesto `money (amount numeric, currency char(3))`."""
 
@@ -42,7 +44,18 @@ class MoneyField(models.Field):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return None
-        amount, currency = value.strip("(){}").split(",")
+        #print(type(value), value)
+        if isinstance(value, (list, tuple)) and len(value) == 2:
+            amount, currency = value
+        if isinstance(value, str) and not ("," in value and "(" in value):
+            # Extraemos número (quitamos símbolo y comas de miles)
+            amount_text = re.sub(r"[^\d\.\-]", "", value)
+            amount = Decimal(amount_text)
+            # Puedes ajustar esto si manejas varias monedas
+            return {"amount": amount, "currency": "USD"}
+        else:
+            text = str(value).strip("(){} ")
+            amount, currency = text.split(",")
         return {"amount": amount, "currency": currency}
 
     def get_prep_value(self, value):
@@ -377,6 +390,9 @@ class AuditLog(models.Model):
     changed_at = models.DateTimeField(auto_now_add=True)
     change_user = models.CharField(max_length=150)
 
+############################
+#          Vistas          #
+############################
 class CatalogoLibros(models.Model):
     """Vista para el catálogo completo de libros"""
     isbn = models.CharField(max_length=13, primary_key=True)

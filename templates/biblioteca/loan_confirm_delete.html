@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Eliminar Préstamo</h1>
+  <p>¿Seguro que deseas borrar el préstamo con ID <strong>{{ object.pk }}</strong>?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, borrar</button>
+    <a href="{% url 'prestamos-list' %}">No, volver</a>
+  </form>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ libro.title }}</h2>
+<p><strong>Autor:</strong> {{ libro.autor_principal }}</p>
+<p><strong>Año:</strong> {{ libro.published_year }}</p>
+<!-- …muestra más campos según necesites… -->
+<p>
+  <a href="{% url 'book-edit' libro.isbn %}">Editar</a> |
+  <a href="{% url 'catalogo-list' %}">Volver al catálogo</a>
+</p>
+{% endblock %}
