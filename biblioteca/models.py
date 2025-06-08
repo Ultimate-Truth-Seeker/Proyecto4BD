@@ -376,3 +376,85 @@ class AuditLog(models.Model):
     op = models.CharField(max_length=8)
     changed_at = models.DateTimeField(auto_now_add=True)
     change_user = models.CharField(max_length=150)
+
+class CatalogoLibros(models.Model):
+    """Vista para el catálogo completo de libros"""
+    isbn = models.CharField(max_length=13, primary_key=True)
+    title = models.CharField(max_length=255)
+    autor_principal = models.CharField(max_length=161)
+    published_year = models.PositiveSmallIntegerField()
+    condition = models.CharField(max_length=10)
+    page_count = models.PositiveIntegerField()
+    generos = models.TextField(blank=True, null=True)
+    otros_autores = models.TextField(blank=True, null=True)
+    total_copias = models.IntegerField(default=0)
+    copias_disponibles = models.IntegerField(default=0)
+    total_reviews = models.IntegerField(default=0)
+    rating_promedio = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField()
+    estado_disponibilidad = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False  # Django no manejará esta tabla
+        db_table = 'vista_catalogo_libros'
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+class PrestamosUsuarios(models.Model):
+    """Vista para el estado de préstamos por usuario"""
+    usuario_id = models.BigIntegerField(primary_key=True)
+    username = models.CharField(max_length=150)
+    nombre_completo = models.CharField(max_length=181)
+    email = models.EmailField()
+    estado_usuario = models.CharField(max_length=10)
+    total_prestamos = models.IntegerField(default=0)
+    prestamos_activos = models.IntegerField(default=0)
+    prestamos_devueltos = models.IntegerField(default=0)
+    prestamos_vencidos = models.IntegerField(default=0)
+    total_multas = models.IntegerField(default=0)
+    multas_pendientes = models.IntegerField(default=0)
+    monto_multas_pendientes = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_reservas = models.IntegerField(default=0)
+    reservas_activas = models.IntegerField(default=0)
+    total_reviews = models.IntegerField(default=0)
+    date_joined = models.DateTimeField()
+    estado_prestamos = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False
+        db_table = 'vista_prestamos_usuarios'
+        ordering = ['username']
+
+    def __str__(self):
+        return self.username
+
+class ActividadSucursales(models.Model):
+    """Vista para la actividad de las sucursales"""
+    sucursal_id = models.BigIntegerField(primary_key=True)
+    nombre_sucursal = models.CharField(max_length=120)
+    address = models.CharField(max_length=255)
+    phone = models.CharField(max_length=25)
+    total_estantes = models.IntegerField(default=0)
+    total_copias = models.IntegerField(default=0)
+    copias_disponibles = models.IntegerField(default=0)
+    copias_prestadas = models.IntegerField(default=0)
+    total_prestamos_historicos = models.IntegerField(default=0)
+    prestamos_activos = models.IntegerField(default=0)
+    prestamos_vencidos = models.IntegerField(default=0)
+    total_eventos = models.IntegerField(default=0)
+    eventos_futuros = models.IntegerField(default=0)
+    total_asistencias_eventos = models.IntegerField(default=0)
+    porcentaje_ocupacion = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    promedio_asistencia_eventos = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    created_at = models.DateTimeField()
+    nivel_actividad = models.CharField(max_length=20)
+
+    class Meta:
+        managed = False
+        db_table = 'vista_actividad_sucursales'
+        ordering = ['nombre_sucursal']
+
+    def __str__(self):
+        return self.nombre_sucursal
