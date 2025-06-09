@@ -2073,3 +2073,18 @@ INSERT INTO biblioteca_reviewvote (review_id, user_id, is_upvote) VALUES
 (100, 31, TRUE),
 (100, 74, TRUE),
 (100, 77, FALSE);
+
+SELECT setval(
+  pg_get_serial_sequence('biblioteca_fine','id'),
+  COALESCE(MAX(id),0)
+) FROM biblioteca_fine;
+
+SELECT setval(
+  pg_get_serial_sequence('biblioteca_loan','id'),
+  COALESCE(MAX(id),0)
+) FROM biblioteca_loan;
+
+SELECT setval(
+  pg_get_serial_sequence('biblioteca_branch','id'),
+  COALESCE(MAX(id),0)
+) FROM biblioteca_branch;

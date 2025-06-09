@@ -13,10 +13,11 @@ class Migration(migrations.Migration):
             CREATE OR REPLACE FUNCTION calc_overdue_fine(p_loan biblioteca_loan)
             RETURNS numeric AS $$
             DECLARE
-                overdue_days integer := GREATEST(date_part('day', CURRENT_DATE - p_loan.due_date), 0);
+            overdue_days integer := GREATEST((CURRENT_DATE - p_loan.due_date), 0);
             BEGIN
-                RETURN overdue_days * 0.50;
-            END;$$ LANGUAGE plpgsql IMMUTABLE;
+            RETURN overdue_days * 0.50;
+            END;
+            $$ LANGUAGE plpgsql IMMUTABLE;
 
             CREATE OR REPLACE FUNCTION copy_available_count(p_book_id VARCHAR)
             RETURNS INT AS $$
@@ -42,16 +43,19 @@ class Migration(migrations.Migration):
             -- Trigger: generar multa tras devolución
             CREATE OR REPLACE FUNCTION trg_generate_fine() RETURNS trigger AS $$
             BEGIN
+                IF EXISTS (SELECT 1 FROM biblioteca_fine WHERE loan_id = NEW.id) 
+                THEN RETURN NEW;
+                END IF;
                 IF NEW.returned_at IS NOT NULL AND NEW.returned_at::date > NEW.due_date THEN
-                    INSERT INTO biblioteca_fines(loan_id, amount, created_at)
-                    VALUES(NEW.id, calc_overdue_fine(NEW), NOW());
+                    INSERT INTO biblioteca_fine(loan_id, amount, created_at, paid)
+                    VALUES(NEW.id, calc_overdue_fine(NEW), NOW(), FALSE);
                 END IF;
                 RETURN NEW;
             END;$$ LANGUAGE plpgsql;
 
             CREATE TRIGGER trg_fine_after_return
-            AFTER UPDATE ON biblioteca_loan
-            FOR EACH ROW WHEN (NEW.returned_at IS NOT NULL)
+            AFTER UPDATE OF returned_at ON biblioteca_loan
+            FOR EACH ROW WHEN (OLD.returned_at IS NULL AND NEW.returned_at IS NOT NULL)
             EXECUTE FUNCTION trg_generate_fine();
 
             -- Trigger: auditoría de libros

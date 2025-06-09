@@ -298,8 +298,12 @@ class Loan(models.Model):
         ]
 
     def clean(self):  # validación a nivel aplicación
-        if self.due_date <= self.loaned_at.date():
-            raise ValidationError("La fecha de devolución debe ser posterior a la fecha del préstamo.")
+        if self.loaned_at != None:
+            if self.due_date <= self.loaned_at.date():
+                raise ValidationError("La fecha de devolución debe ser posterior a la fecha del préstamo.")
+        else:
+            if self.due_date <= timezone.now().date():
+                raise ValidationError("La fecha de devolución debe ser posterior a la fecha del préstamo.")
 
 class Reservation(models.Model):
     copy = models.ForeignKey(Copy, on_delete=models.PROTECT)

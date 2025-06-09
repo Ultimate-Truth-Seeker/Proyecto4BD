@@ -1,0 +1,90 @@
+{# biblioteca/templates/biblioteca/catalogo_report.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Reporte: Catálogo de Libros</h1>
+
+<form method="get" class="filters mb-4">
+  <div>
+    <label>Año desde:</label>
+    <input type="number" name="year_min" value="{{ request.GET.year_min }}">
+    <label>hasta:</label>
+    <input type="number" name="year_max" value="{{ request.GET.year_max }}">
+  </div>
+  <div>
+  <label for="id_condition">Condición:</label>
+  <select name="condition" id="id_condition">
+    <option value="">— Todos —</option>
+    {% for code, label in condition_choices %}
+      <option 
+        value="{{ code }}" 
+        {% if request.GET.condition == code %}selected{% endif %}>
+        {{ label }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
+  <div>
+    <label>Género (texto):</label>
+    <input type="text" name="genero" value="{{ request.GET.genero }}">
+  </div>
+  <div>
+    <label>Estado:</label>
+    <select name="estado">
+      <option value="">— Todos —</option>
+      <option value="Disponible" {% if request.GET.estado == "Disponible" %}selected{% endif %}>Disponible</option>
+      <option value="No disponible" {% if request.GET.estado == "No disponible" %}selected{% endif %}>No disponible</option>
+    </select>
+  </div>
+  <div>
+    <label>Rating ≥:</label>
+    <input type="number" step="0.1" name="min_rating" value="{{ request.GET.min_rating }}">
+  </div>
+
+  <button type="submit">Filtrar</button>
+        {% with params=request.GET.urlencode %}
+            <a href="?{% if params %}{{ params }}&{% endif %}export=csv" class="ml-2">
+            Exportar CSV
+            </a>
+        {% endwith %}
+</form>
+
+{# Gráficos con Chart.js #}
+<canvas id="condChart" height="200"></canvas>
+<canvas id="dispChart" height="200"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Libros por condición
+    new Chart(
+      document.getElementById('condChart').getContext('2d'),
+      {
+        type: 'bar',
+        data: {
+          labels: {{ cond_labels|safe }},
+          datasets: [{
+            label: 'Libros por condición',
+            data: {{ cond_values|safe }},
+          }]
+        }
+      }
+    );
+
+    // Estado de disponibilidad
+    new Chart(
+      document.getElementById('dispChart').getContext('2d'),
+      {
+        type: 'pie',
+        data: {
+          labels: {{ disp_labels|safe }},
+          datasets: [{
+            label: 'Estado de disponibilidad',
+            data: {{ disp_values|safe }},
+          }]
+        }
+      }
+    );
+  </script>
+
+{% endblock %}
