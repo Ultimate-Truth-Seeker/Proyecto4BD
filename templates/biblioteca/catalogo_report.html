@@ -53,6 +53,46 @@
 {# Gráficos con Chart.js #}
 <canvas id="condChart" height="200"></canvas>
 <canvas id="dispChart" height="200"></canvas>
+<table class="table-auto w-full mt-6">
+  <thead>
+    <tr>
+      <th>ISBN</th><th>Título</th><th>Año</th><th>Condición</th><th>Rating</th><th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for libro in libros %}
+    <tr>
+      <td>{{ libro.isbn }}</td>
+      <td>{{ libro.title }}</td>
+      <td>{{ libro.published_year }}</td>
+      <td>{{ libro.condition }}</td>
+      <td>{{ libro.rating_promedio }}</td>
+      <td>{{ libro.estado_disponibilidad }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No hay resultados</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% if is_paginated %}
+  <div class="mt-4">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        « Anterior
+      </a>
+    {% endif %}
+
+    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        Siguiente »
+      </a>
+    {% endif %}
+  </div>
+{% endif %}
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>

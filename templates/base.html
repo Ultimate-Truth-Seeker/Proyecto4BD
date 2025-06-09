@@ -14,6 +14,15 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" >CRUDs Sistema de Biblioteca</a>
+    <a  href="{% url 'catalogo-list' %}">Catalogo Libros</a>
+    <a  href="{% url 'prestamos-list' %}">Usuarios Préstamos</a>
+    <a  href="{% url 'sucursales-list' %}">Actividad Sucursales</a>
+  </nav>
+  <nav class="navbar navbar-expand-lg navbar-light ">
+    <a class="navbar-brand" >Reportes y Exportar a .csv</a>
+    <a  href="{% url 'catalogo-report' %}">Reporte Catalogo</a>
+    <a  href="{% url 'prestamos-report' %}">Reporte Préstamos</a>
+    <a  href="{% url 'sucursales-report' %}">Reporte Sucursales</a>
   </nav>
 
   <main role="main" class="container">

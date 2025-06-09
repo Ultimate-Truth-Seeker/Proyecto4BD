@@ -1,0 +1,132 @@
+{# biblioteca/templates/biblioteca/prestamos_usuarios_report.html #}
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Reporte: Préstamos por Usuario</h1>
+
+<form method="get" class="filters mb-4">
+  <div>
+    <label>Alta desde:</label>
+    <input type="date" name="joined_from" value="{{ request.GET.joined_from }}">
+    <label>hasta:</label>
+    <input type="date" name="joined_to"   value="{{ request.GET.joined_to }}">
+  </div>
+  <div>
+    <label>Estado Préstamos:</label>
+    <select name="estado_prestamos">
+    <option value="">— Todos —</option>
+    {% for code, label in estado_prestamos_choices %}
+        <option
+        value="{{ code }}"
+        {% if request.GET.estado_prestamos == code %}selected{% endif %}
+        >
+        {{ label }}
+        </option>
+    {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label>Vencidos ≥:</label>
+    <input type="number" name="min_vencidos" min="0" value="{{ request.GET.min_vencidos }}">
+  </div>
+  <div>
+    <label>Multas Pendientes ≥:</label>
+    <input type="number" name="min_multas" min="0" value="{{ request.GET.min_multas }}">
+  </div>
+  <div>
+    <label>Reservas Activas:</label>
+    <select name="reservas_activas">
+      <option value="">— Todos —</option>
+      <option value="1" {% if request.GET.reservas_activas == "1" %}selected{% endif %}>Sí</option>
+      <option value="0" {% if request.GET.reservas_activas == "0" %}selected{% endif %}>No</option>
+    </select>
+  </div>
+
+  <button type="submit">Filtrar</button>
+  {% with params=request.GET.urlencode %}
+    <a href="?{% if params %}{{ params }}&{% endif %}export=csv" class="ml-2">
+      Exportar CSV
+    </a>
+  {% endwith %}
+</form>
+
+{# Gráficos con Chart.js #}
+<canvas id="estadoChart" height="200"></canvas>
+<canvas id="multasChart" height="200"></canvas>
+
+<table class="table-auto w-full mt-6">
+  <thead>
+    <tr>
+      <th>Usuario</th><th>Total Prést.</th><th>Activos</th><th>Vencidos</th>
+      <th>Multas Pend.</th><th>Reservas Act.</th><th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in usuarios %}
+    <tr>
+      <td>{{ u.username }}</td>
+      <td>{{ u.total_prestamos }}</td>
+      <td>{{ u.prestamos_activos }}</td>
+      <td>{{ u.prestamos_vencidos }}</td>
+      <td>{{ u.multas_pendientes }}</td>
+      <td>{{ u.reservas_activas }}</td>
+      <td>{{ u.estado_prestamos }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">No hay resultados</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+  <div class="mt-4">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        « Anterior
+      </a>
+    {% endif %}
+
+    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        Siguiente »
+      </a>
+    {% endif %}
+  </div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Distribución por estado de préstamos
+  new Chart(
+    document.getElementById('estadoChart').getContext('2d'),
+    {
+      type: 'pie',
+      data: {
+        labels: {{ estado_labels|safe }},
+        datasets: [{
+          label: 'Usuarios por Estado',
+          data: {{ estado_values|safe }},
+        }]
+      }
+    }
+  );
+
+  // Distribución de usuarios con/sin multas pendientes
+  new Chart(
+    document.getElementById('multasChart').getContext('2d'),
+    {
+      type: 'bar',
+      data: {
+        labels: {{ multas_labels|safe }},
+        datasets: [{
+          label: 'Multas Pendientes',
+          data: {{ multas_values|safe }},
+        }]
+      }
+    }
+  );
+</script>
+{% endblock %}

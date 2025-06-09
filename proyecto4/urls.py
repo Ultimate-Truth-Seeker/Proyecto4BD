@@ -23,8 +23,8 @@ urlpatterns = [
 
     # Reportes
     path('reportes/catalogo/', views.CatalogoReportView.as_view(), name='catalogo-report'),
-    path('reportes/prestamos/', views.CatalogoReportView.as_view(), name='catalogo-report'),
-    path('reportes/sucursales/', views.CatalogoReportView.as_view(), name='catalogo-report'),
+    path('reportes/prestamos/', views.PrestamosUsuariosReportView.as_view(), name='prestamos-report'),
+    path('reportes/sucursales/', views.ActividadSucursalesReportView.as_view(), name='sucursales-report'),
 
     # CRUD de Catálogo
     path("catalogo/", views.CatalogoListView.as_view(), name="catalogo-list"),

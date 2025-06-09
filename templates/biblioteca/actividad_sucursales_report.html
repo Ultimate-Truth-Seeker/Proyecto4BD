@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Reporte: Actividad de Sucursales</h1>
+
+<form method="get" class="filters mb-4">
+  <div>
+    <label>Creada desde:</label>
+    <input type="date" name="created_from" value="{{ request.GET.created_from }}">
+    <label>hasta:</label>
+    <input type="date" name="created_to"   value="{{ request.GET.created_to }}">
+  </div>
+  <div>
+    <label>Nivel de Actividad:</label>
+    <select name="nivel">
+      <option value="">— Todos —</option>
+      {% for code,label in nivel_choices %}
+        <option value="{{ code }}" {% if request.GET.nivel == code %}selected{% endif %}>
+          {{ label }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label>Copias Prestadas ≥:</label>
+    <input type="number" name="min_prestadas" min="0" value="{{ request.GET.min_prestadas }}">
+  </div>
+  <div>
+    <label>Eventos Futuros:</label>
+    <select name="eventos_futuros">
+      <option value="">— Todos —</option>
+      <option value="1" {% if request.GET.eventos_futuros == '1' %}selected{% endif %}>Sí</option>
+      <option value="0" {% if request.GET.eventos_futuros == '0' %}selected{% endif %}>No</option>
+    </select>
+  </div>
+  <div>
+    <label>Promedio Asistencia ≥:</label>
+    <input type="number" step="0.01" name="min_asistencia" min="0" value="{{ request.GET.min_asistencia }}">
+  </div>
+
+  <button type="submit">Filtrar</button>
+  {% with params=request.GET.urlencode %}
+    <a href="?{% if params %}{{ params }}&{% endif %}export=csv" class="ml-2">
+      Exportar CSV
+    </a>
+  {% endwith %}
+</form>
+
+<canvas id="nivelChart" height="200"></canvas>
+<canvas id="futurosChart" height="200" class="mt-4"></canvas>
+
+<table class="table-auto w-full mt-6">
+  <thead>
+    <tr>
+      <th>Sucursal</th><th>Copias</th><th>Prestadas</th><th>Activos</th>
+      <th>Vencidos</th><th>% Ocupación</th><th>Prom Asist.</th><th>Nivel</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for s in sucursales %}
+    <tr>
+      <td>{{ s.nombre_sucursal }}</td>
+      <td>{{ s.total_copias }}</td>
+      <td>{{ s.copias_prestadas }}</td>
+      <td>{{ s.prestamos_activos }}</td>
+      <td>{{ s.prestamos_vencidos }}</td>
+      <td>{{ s.porcentaje_ocupacion }}%</td>
+      <td>{{ s.promedio_asistencia_eventos }}</td>
+      <td>{{ s.nivel_actividad }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8">No hay datos</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+  <div class="mt-4">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        « Anterior
+      </a>
+    {% endif %}
+
+    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">
+        Siguiente »
+      </a>
+    {% endif %}
+  </div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Nivel de actividad (pie)
+  new Chart(
+    document.getElementById('nivelChart').getContext('2d'),
+    {
+      type: 'pie',
+      data: {
+        labels: {{ nivel_labels|safe }},
+        datasets: [{
+          label: 'Sucursales por Nivel',
+          data: {{ nivel_values|safe }},
+        }]
+      }
+    }
+  );
+
+  // Eventos futuros (bar)
+  new Chart(
+    document.getElementById('futurosChart').getContext('2d'),
+    {
+      type: 'bar',
+      data: {
+        labels: {{ futuros_labels|safe }},
+        datasets: [{
+          label: 'Eventos Futuros',
+          data: {{ futuros_values|safe }},
+        }]
+      }
+    }
+  );
+</script>
+{% endblock %}
